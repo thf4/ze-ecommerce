@@ -13,7 +13,7 @@
 
 > ## Exceptions
 1. ✅ Return 404 when api doesn't exist.
-2. ✅ Return 400 when user don't have expecific authorization.
+2. ✅ Return 401 when user don't have expecific authorization.
 3. ✅ Return 500 when admin try create product and service doesn't work.
 4. ✅ Return 500 when admin try to update product data and service doesn't work.
 5. ✅ Return 404 when api don't have any product.

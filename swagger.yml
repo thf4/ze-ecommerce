@@ -1,0 +1,211 @@
+openapi: 3.0.0
+info:
+  title: Zecommerce API
+  description: Ecommerce of Seu Zé
+  version: 0.1.9
+
+servers:
+  - url: '{protocol}://api.{enviroment}.zecommerce.com'
+    description: Ecommerce server production.
+  - url: '{protocol}://api.{enviroment}.zecommerce.com'
+    description: Ecommerce server staging.
+    variables:
+      protocol:
+        enum:
+          - http
+          - https
+        default: https
+      enviroment:
+        enum:
+          - prd
+          - qa
+        default: qa
+paths:
+  /product:
+    post:
+      summary: Create new product.
+      parameters:
+        - in: header
+          name: x-request-id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '201':
+          description: Create new product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request.
+        default:
+          description: Unexpected error          
+  /products:
+    get:
+      summary: Return list of products.
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+          required: false
+        - in: header
+          name: x-request-id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: Return all products by query string.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        '404':
+          description: Products was not found.
+        default:
+          description: Unexpected error
+  /productUpdate/${productId}:
+    put:
+      summary: Updated product by id.
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: The ID of the product to return
+          schema:
+            type: string
+            example: 'afc0f9fa-8622-4a6f-8637-9bd449ef5ecd'
+        - in: header
+          name: x-request-id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: Product has been updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request.
+        default:
+          description: Unexpected error              
+  /product/${productId}:
+    get:
+      summary: Return product by id
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: The ID of the product to return
+          schema:
+            type: string
+            example: 'afc0f9fa-8622-4a6f-8637-9bd449ef5ecd'
+        - in: header
+          name: x-request-id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: A Product Object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: The specified product ID is invalid (not a number).
+        '404':
+          description: A product with the specified ID was not found.
+        default:
+          description: Unexpected error
+  /productDelete/${productId}:
+    delete:
+      summary: Delete product by id
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: The ID of the product to delete
+          schema:
+            type: string
+            example: 'afc0f9fa-8622-4a6f-8637-9bd449ef5ecd'
+        - in: header
+          name: x-request-id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: Deleted Product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: The specified product ID is invalid (not a number).
+        '404':
+          description: A product with the specified ID was not found.
+        default:
+          description: Unexpected error    
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+          id:
+            type: string
+            format: uuid
+          name:
+            type: string
+            example: 'Camisa'
+          description:
+            type: string
+            example: 'Camisa Preta listrada'
+          price:
+            type: integer
+            format: int64
+            minimum: 1
+          SKU:
+            type: integer
+            format: int64
+      required:
+        - id
+        - name
+        - description
+        - SKU
+        - category
+        - price
+    Products:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+              example: 'Camisa'
+            description:
+              type: string
+              example: 'Camisa Preta listrada'
+            price:
+              type: integer
+              format: int64
+              minimum: 1
+            category:
+              type: string
+              example: 'Masculina'
+            SKU:
+              type: integer
+              format: int64
