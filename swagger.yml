@@ -21,41 +21,189 @@ servers:
           - qa
         default: qa
 paths:
-  /product:
+  /user:
     post:
-      summary: Create new product.
+      summary: Create new user.
+      tags:
+        - User
       parameters:
         - in: header
           name: x-request-id
           schema:
-            type: string
-            format: uuid
+            $ref: '#/components/headers/RequestID'
           required: true
+      requestBody:
+        $ref: '#/components/requestBodies/UserBody'
       responses:
         '201':
-          description: Create new product
+          $ref: '#/components/responses/CreateUser'
+        '400':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/Unexpected'
+  /users:
+    get:
+      summary: Return a list all users.
+      tags:
+        - User
+      parameters:
+        - in: header
+          name: x-request-id
+          schema:
+            $ref: '#/components/headers/RequestID'
+          required: true
+      responses:
+        '200':
+          description: Return all users by query string.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: '#/components/schemas/ArrayUsers'
         '400':
-          description: Bad Request.
-        default:
-          description: Unexpected error          
-  /products:
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/Unexpected'
+
+  /user/${userId}:
     get:
-      summary: Return list of products.
+      summary: Create new user.
+      tags:
+        - User
       parameters:
-        - in: query
-          name: category
-          schema:
-            type: string
-          required: false
         - in: header
           name: x-request-id
           schema:
+            $ref: '#/components/headers/RequestID' 
+          required: true
+        - name: userId
+          in: path
+          description: The ID of the user to return
+          schema:
             type: string
-            format: uuid
+            example: 'afc0f9fa-8622-4a6f-8637-9bd449ef5ecd'
+          required: true
+      responses:
+        '200':
+          description: Return user by id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayUsers'
+        '400':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/Unexpected'
+    delete:
+      summary: Delete user by id
+      tags:
+        - User
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to delete
+          schema:
+            type: string
+            example: 'afc0f9fa-8622-4a6f-8637-9bd449ef5ecd'
+        - in: header
+          name: x-request-id
+          schema:
+            $ref: '#/components/headers/RequestID'
+          required: true
+      responses:
+        '204':
+          description: Deleted User
+        '400':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/Unexpected'
+    put:
+      summary: Updated user by id.
+      tags:
+        - User
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to return
+          schema:
+            example: 'afc0f9fa-8622-4a6f-8637-9bd449ef5ecd'
+        - in: header
+          name: x-request-id
+          schema:
+            $ref: '#/components/headers/RequestID'
+          required: true
+      requestBody:
+        $ref: '#/components/requestBodies/UserBody'
+      responses:
+        '200':
+          description: User has been updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/Unexpected'
+        
+  /product:
+    post:
+      summary: Create new product.
+      tags:
+        - Product
+      parameters:
+        - in: header
+          name: x-request-id
+          schema:
+            $ref: '#/components/headers/RequestID'
+          required: true
+      requestBody:
+        $ref: '#/components/requestBodies/ProductBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/CreateProduct'
+        '400':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/Unexpected'
+
+  /products:
+    get:
+      summary: Return list of products.
+      tags:
+        - Product
+      parameters:
+        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/limitParam'
+        - in: header
+          name: x-request-id
+          schema:
+            $ref: '#/components/headers/RequestID'
           required: true
       responses:
         '200':
@@ -64,41 +212,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Products'
-        '404':
-          description: Products was not found.
-        default:
-          description: Unexpected error
-  /productUpdate/${productId}:
-    put:
-      summary: Updated product by id.
-      parameters:
-        - name: productId
-          in: path
-          required: true
-          description: The ID of the product to return
-          schema:
-            type: string
-            example: 'afc0f9fa-8622-4a6f-8637-9bd449ef5ecd'
-        - in: header
-          name: x-request-id
-          schema:
-            type: string
-            format: uuid
-          required: true
-      responses:
-        '200':
-          description: Product has been updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Product'
         '400':
-          description: Bad Request.
-        default:
-          description: Unexpected error              
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/Unexpected'
+
   /product/${productId}:
     get:
       summary: Return product by id
+      tags:
+        - Product
       parameters:
         - name: productId
           in: path
@@ -110,8 +237,7 @@ paths:
         - in: header
           name: x-request-id
           schema:
-            type: string
-            format: uuid
+            $ref: '#/components/headers/RequestID'
           required: true
       responses:
         '200':
@@ -121,14 +247,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
         '400':
-          description: The specified product ID is invalid (not a number).
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: A product with the specified ID was not found.
-        default:
-          description: Unexpected error
-  /productDelete/${productId}:
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/Unexpected'
     delete:
       summary: Delete product by id
+      tags:
+        - Product
       parameters:
         - name: productId
           in: path
@@ -140,22 +269,52 @@ paths:
         - in: header
           name: x-request-id
           schema:
-            type: string
-            format: uuid
+            $ref: '#/components/headers/RequestID'
           required: true
       responses:
-        '200':
+        '204':
           description: Deleted Product
+        '400':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/Unexpected'
+    put:
+      summary: Updated product by id.
+      tags:
+        - Product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: The ID of the product to return
+          schema:
+            example: 'afc0f9fa-8622-4a6f-8637-9bd449ef5ecd'
+        - in: header
+          name: x-request-id
+          schema:
+            $ref: '#/components/headers/RequestID'
+          required: true
+      requestBody:
+        $ref: '#/components/requestBodies/ProductBody'
+      responses:
+        '200':
+          description: Product has been updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
         '400':
-          description: The specified product ID is invalid (not a number).
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: A product with the specified ID was not found.
-        default:
-          description: Unexpected error    
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/Unexpected'
 
 components:
   schemas:
@@ -209,3 +368,140 @@ components:
             SKU:
               type: integer
               format: int64
+    User:
+      type: object
+      properties:
+        id: 
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: 'Bob Dylan'
+        birthday:
+          type: string
+          example: '2010-10-15'
+        email:
+          type: string
+          example: 'user@email.com'
+        password:
+          type: string
+          example: 'teste159'
+    ArrayUsers:
+      type: array
+      items:
+        type: object
+        properties:
+          id: 
+            type: string
+            format: uuid
+          name:
+            type: string
+            example: 'Bob Dylan'
+          birthday:
+            type: string
+            example: '2010-10-15'
+          email:
+            type: string
+            example: 'user@email.com'
+          password:
+            type: string
+            example: 'teste159'
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+  parameters:
+    sortParam:
+      in: query
+      name: sort
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+    limitParam:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+  requestBodies:
+    ProductBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Product'
+    UserBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+  headers:
+    RequestID:
+      schema:
+        type: string
+        format: uuid
+  responses:
+    CreateUser:
+          description: User Success Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    CreateProduct:
+          description: Product Success Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    NotFound:
+          description: The specified resource was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 400
+                message: 'Not Found'
+    Unauthorized:
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 401
+                message: 'Unauthorized'
+    BadRequest:
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 404
+                message: 'Bad Request'
+    Unexpected:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 500
+                message: 'Unexpected Error'
+
+tags:
+  - name: Product
+    description: Everything about your Products
+  - name: User
+    description: Everything about your Users
