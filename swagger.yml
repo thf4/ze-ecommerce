@@ -38,11 +38,9 @@ paths:
         '201':
           $ref: '#/components/responses/CreateUser'
         '400':
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/Unexpected'
   /users:
@@ -70,21 +68,17 @@ paths:
           description: Return all users by query string.
           content:
             application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResult'
-                  - type: object
-                    properties:
-                      results:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/User'
+              schema: 
+                type: array
+                items:
+                  type: string
+                maxItems: 0
         '400':
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/Unexpected'
 
@@ -114,11 +108,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ArrayUsers'
         '400':
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/Unexpected'
     delete:
@@ -142,11 +136,11 @@ paths:
         '204':
           description: Deleted User
         '400':
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/Unexpected'
     put:
@@ -168,12 +162,8 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/UserBody'
       responses:
-        '200':
+        '204':
           description: User has been updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
         '400':
           $ref: '#/components/responses/NotFound'
         '401':
@@ -199,8 +189,6 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/CreateProduct'
-        '400':
-          $ref: '#/components/responses/NotFound'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -233,15 +221,11 @@ paths:
           description: Return all products.
           content:
             application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResult'
-                  - type: object
-                    properties:
-                      results:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Product'
+              schema: 
+                type: array
+                items:
+                  type: string
+                maxItems: 0
         '400':
           $ref: '#/components/responses/NotFound'
         '401':
@@ -331,12 +315,8 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/ProductBody'
       responses:
-        '200':
+        '204':
           description: Product has been updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Product'
         '400':
           $ref: '#/components/responses/NotFound'
         '401':
@@ -377,27 +357,7 @@ components:
     Products:
         type: array
         items:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-            name:
-              type: string
-              example: 'Camisa'
-            description:
-              type: string
-              example: 'Camisa Preta listrada'
-            price:
-              type: integer
-              format: int64
-              minimum: 1
-            category:
-              type: string
-              example: 'Masculina'
-            SKU:
-              type: integer
-              format: int64
+          $ref: '#/components/schemas/Product'
     User:
       type: object
       properties:
@@ -417,25 +377,9 @@ components:
           type: string
           example: 'teste159'
     ArrayUsers:
-      type: array
-      items:
-        type: object
-        properties:
-          id: 
-            type: string
-            format: uuid
-          name:
-            type: string
-            example: 'Bob Dylan'
-          birthday:
-            type: string
-            example: '2010-10-15'
-          email:
-            type: string
-            example: 'user@email.com'
-          password:
-            type: string
-            example: 'teste159'
+        type: array
+        items:
+          $ref: '#/components/schemas/User'
     Error:
       type: object
       properties:
@@ -520,7 +464,7 @@ components:
               schema:
                 $ref: '#/components/schemas/Error'
               example:
-                code: 400
+                code: 404
                 message: 'Not Found'
     Unauthorized:
           description: Unauthorized.
@@ -538,7 +482,7 @@ components:
               schema:
                 $ref: '#/components/schemas/Error'
               example:
-                code: 404
+                code: 400
                 message: 'Bad Request'
     Unexpected:
           description: Unexpected error.
