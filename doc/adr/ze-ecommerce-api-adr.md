@@ -4,7 +4,7 @@
 
 # Status 
 
-**Proposta:** a decisão ainda não foi aprovada.
+**Aceita:**
 
 # Contexto 
 
